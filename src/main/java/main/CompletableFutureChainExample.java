@@ -29,11 +29,6 @@ public class CompletableFutureChainExample {
             );
     }
 
-    public static void main(String[] args) {
-        CompletableFutureChainExample example = new CompletableFutureChainExample();
-        example.performAsyncChainedCalls();
-    }
-
     static class CollaboratorA {
         public Result fetchData() {
             try {
@@ -54,6 +49,11 @@ public class CompletableFutureChainExample {
             }
             return new Result("Data from B");
         }
+    }
+
+    public static void main(String[] args) {
+        CompletableFutureChainExample example = new CompletableFutureChainExample();
+        example.performAsyncChainedCalls();
     }
 
 }
