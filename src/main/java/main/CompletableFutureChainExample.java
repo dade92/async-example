@@ -19,8 +19,9 @@ public class CompletableFutureChainExample {
     }
 
     private CompletableFuture<Result> executeAsync(ExecutorService executor) {
-        return CompletableFuture
-            .supplyAsync(() -> collaboratorA.fetchData(), executor)
+        CompletableFuture<Result> resultCompletableFuture = CompletableFuture
+            .supplyAsync(() -> collaboratorA.fetchData(), executor);
+        return resultCompletableFuture
             .thenCombine(
                 CompletableFuture.supplyAsync(
                     collaboratorB::fetchData, executor),
