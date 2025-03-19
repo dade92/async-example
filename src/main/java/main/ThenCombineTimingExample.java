@@ -33,9 +33,10 @@ public class ThenCombineTimingExample {
         CompletableFuture<String> futureA = fetchUserId();
         CompletableFuture<String> futureB = fetchUserDetails();
 
-        futureA.thenCombine(futureB, (userId, userDetails) -> {
-            return "Combined: ID=" + userId + ", " + userDetails;
-        }).thenAccept(result -> {
+        futureA.thenCombine(
+            futureB,
+            (userId, userDetails) -> "Combined: ID=" + userId + ", " + userDetails
+        ).thenAccept(result -> {
             log("Final result: " + result);
             executor.shutdown();
         });
@@ -47,8 +48,8 @@ public class ThenCombineTimingExample {
         log("Main thread starts async chain");
 
         fetchUserId()
-            .thenCompose(userId -> fetchUserDetails())
-            .thenAccept(userDetails -> {
+            .thenCompose((userId) -> fetchUserDetails())
+            .thenAccept((userDetails) -> {
                 log("Final result: " + userDetails);
                 executor.shutdown();
             });
@@ -68,6 +69,6 @@ public class ThenCombineTimingExample {
     }
 
     public static void main(String[] args) {
-        new ThenCombineTimingExample().runTheSecondAfterTheFirst();
+        new ThenCombineTimingExample().runIndependently();
     }
 }
