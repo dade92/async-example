@@ -39,7 +39,7 @@ public class ThenCombineTimingExample {
         ).thenAccept(result -> {
             log("Final result: " + result);
             executor.shutdown();
-        });
+        }).thenRun(() -> log("All tasks completed"));
 
         log("Main thread finished setup (non-blocking)");
     }
