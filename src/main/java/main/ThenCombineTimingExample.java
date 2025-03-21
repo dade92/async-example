@@ -103,7 +103,7 @@ public class ThenCombineTimingExample {
         log("Main thread finished setup (non-blocking)");
     }
 
-    public void runThree() {
+    public void runThreeInParallel() {
         log("Main thread starts async chain");
 
         fetchUserId()
@@ -116,7 +116,8 @@ public class ThenCombineTimingExample {
             )
             .thenAcceptBoth(
                 fetchOrder(),
-                (details, order) -> log("Final result: " + details + ", " + order))
+                (details, order) -> log("Final result: " + details + ", " + order)
+            )
             .thenRun(executor::shutdown);
 
         log("Main thread finished setup (non-blocking)");
@@ -134,6 +135,6 @@ public class ThenCombineTimingExample {
     }
 
     public static void main(String[] args) {
-        new ThenCombineTimingExample().runTheSecondAfterTheFirst();
+        new ThenCombineTimingExample().runThreeInParallel();
     }
 }
