@@ -12,30 +12,39 @@ public class ThenCombineTimingExample {
     private final ExecutorService executor = Executors.newFixedThreadPool(4);
 
     public CompletableFuture<String> fetchUserId() {
-        return CompletableFuture.supplyAsync(() -> {
-            log("Started fetching user ID...");
-            simulateDelay(1000);
-            log("Fetched user ID: 42");
-            return "42";
-        }, executor);
+        return CompletableFuture.supplyAsync(
+            () -> {
+                log("Started fetching user ID...");
+                simulateDelay(1000);
+                log("Fetched user ID: 42");
+                return "42";
+            },
+            executor
+        );
     }
 
     public CompletableFuture<String> fetchUserDetails() {
-        return CompletableFuture.supplyAsync(() -> {
-            log("Started fetching user details (independent task)...");
-            simulateDelay(1500);
-            log("Fetched static user details.");
-            return "User{name='John Doe'}";
-        }, executor);
+        return CompletableFuture.supplyAsync(
+            () -> {
+                log("Started fetching user details (independent task)...");
+                simulateDelay(1500);
+                log("Fetched static user details.");
+                return "User{name='John Doe'}";
+            },
+            executor
+        );
     }
 
     public CompletableFuture<String> fetchOrder() {
-        return CompletableFuture.supplyAsync(() -> {
-            log("Started fetching order (independent task)...");
-            simulateDelay(1500);
-            log("Fetched order.");
-            return "Order=56";
-        }, executor);
+        return CompletableFuture.supplyAsync(
+            () -> {
+                log("Started fetching order (independent task)...");
+                simulateDelay(1500);
+                log("Fetched order.");
+                return "Order=56";
+            },
+            executor
+        );
     }
 
     public void runIndependently() {
@@ -69,10 +78,7 @@ public class ThenCombineTimingExample {
     public void runAll() {
         log("Main thread starts async chain");
 
-        CompletableFuture<String> fetchId = fetchUserId();
-        CompletableFuture<String> fetchDetails = fetchUserDetails();
-
-        allOf(fetchId, fetchDetails)
+        allOf(fetchUserId(), fetchUserDetails(), fetchOrder())
             .thenRun(() -> {
                 log("All tasks completed");
                 executor.shutdown();
