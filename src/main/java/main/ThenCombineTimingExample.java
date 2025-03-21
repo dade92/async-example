@@ -63,7 +63,10 @@ public class ThenCombineTimingExample {
         log("Main thread starts async parallel tasks");
 
         fetchUserId()
-            .thenCombine(fetchUserDetails(), (userId, userDetails) -> "Combined: ID=" + userId + ", " + userDetails)
+            .thenCombine(
+                fetchUserDetails(),
+                (userId, userDetails) -> "Combined: ID=" + userId + ", " + userDetails
+            )
             .thenAccept(result -> {
                 log("Final result: " + result);
                 executor.shutdown();
@@ -149,6 +152,6 @@ public class ThenCombineTimingExample {
     }
 
     public static void main(String[] args) {
-        new ThenCombineTimingExample().runTheSecondWithFirstAndCollectAllResults();
+        new ThenCombineTimingExample().runIndependently();
     }
 }
