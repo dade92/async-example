@@ -77,12 +77,26 @@ public class ThenCombineTimingExample {
         log("Main thread starts async chain");
 
         fetchUserId()
-            .thenCompose((userId) -> {
-                return fetchUserDetails(userId);
-            })
+            .thenCompose(this::fetchUserDetails)
             .thenAccept(
                 (userDetails) -> {
                     log("Final result: " + userDetails);
+                    executor.shutdown();
+                }
+            )
+            .thenRun(() -> log("All tasks completed"));
+
+        log("Main thread finished setup (non-blocking)");
+    }
+
+    public void runTheSecondWithFirstAndCollectAllResults() {
+        log("Main thread starts async chain");
+
+        fetchUserId()
+            .thenAcceptBoth(
+                fetchUserDetails(),
+                (userId, details) -> {
+                    log("Final result: " + userId + " " + details);
                     executor.shutdown();
                 }
             )
@@ -135,6 +149,6 @@ public class ThenCombineTimingExample {
     }
 
     public static void main(String[] args) {
-        new ThenCombineTimingExample().runThreeInParallel();
+        new ThenCombineTimingExample().runTheSecondWithFirstAndCollectAllResults();
     }
 }
