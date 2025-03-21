@@ -5,6 +5,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static java.util.concurrent.CompletableFuture.allOf;
+
 public class ThenCombineTimingExample {
 
     private final ExecutorService executor = Executors.newFixedThreadPool(4);
@@ -20,26 +22,32 @@ public class ThenCombineTimingExample {
 
     public CompletableFuture<String> fetchUserDetails() {
         return CompletableFuture.supplyAsync(() -> {
-            log("Started fetching static user details (independent task)...");
+            log("Started fetching user details (independent task)...");
             simulateDelay(1500);
             log("Fetched static user details.");
             return "User{name='John Doe'}";
         }, executor);
     }
 
+    public CompletableFuture<String> fetchOrder() {
+        return CompletableFuture.supplyAsync(() -> {
+            log("Started fetching order (independent task)...");
+            simulateDelay(1500);
+            log("Fetched order.");
+            return "Order=56";
+        }, executor);
+    }
+
     public void runIndependently() {
         log("Main thread starts async parallel tasks");
 
-        CompletableFuture<String> futureA = fetchUserId();
-        CompletableFuture<String> futureB = fetchUserDetails();
-
-        futureA.thenCombine(
-            futureB,
-            (userId, userDetails) -> "Combined: ID=" + userId + ", " + userDetails
-        ).thenAccept(result -> {
-            log("Final result: " + result);
-            executor.shutdown();
-        }).thenRun(() -> log("All tasks completed"));
+        fetchUserId()
+            .thenCombine(fetchUserDetails(), (userId, userDetails) -> "Combined: ID=" + userId + ", " + userDetails)
+            .thenAccept(result -> {
+                log("Final result: " + result);
+                executor.shutdown();
+            })
+            .thenRun(() -> log("All tasks completed"));
 
         log("Main thread finished setup (non-blocking)");
     }
@@ -52,7 +60,41 @@ public class ThenCombineTimingExample {
             .thenAccept((userDetails) -> {
                 log("Final result: " + userDetails);
                 executor.shutdown();
+            })
+            .thenRun(() -> log("All tasks completed"));
+
+        log("Main thread finished setup (non-blocking)");
+    }
+
+    public void runAll() {
+        log("Main thread starts async chain");
+
+        CompletableFuture<String> fetchId = fetchUserId();
+        CompletableFuture<String> fetchDetails = fetchUserDetails();
+
+        allOf(fetchId, fetchDetails)
+            .thenRun(() -> {
+                log("All tasks completed");
+                executor.shutdown();
             });
+
+        log("Main thread finished setup (non-blocking)");
+    }
+
+    public void runThree() {
+        log("Main thread starts async chain");
+
+        fetchUserId()
+            .thenCombine(
+                fetchUserDetails(),
+                (userId, userDetails) -> {
+                    log("Final result: " + userId + ", " + userDetails);
+                    return userId + ", " + userDetails;
+                })
+            .thenAcceptBoth(
+                fetchOrder(),
+                (details, order) -> log("Final result: " + details + ", " + order))
+            .thenRun(executor::shutdown);
 
         log("Main thread finished setup (non-blocking)");
     }
@@ -69,6 +111,6 @@ public class ThenCombineTimingExample {
     }
 
     public static void main(String[] args) {
-        new ThenCombineTimingExample().runIndependently();
+        new ThenCombineTimingExample().runThree();
     }
 }
