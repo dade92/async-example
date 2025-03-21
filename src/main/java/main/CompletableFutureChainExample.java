@@ -12,27 +12,28 @@ public class CompletableFutureChainExample {
     public void performAsyncChainedCalls() {
         ExecutorService executor = Executors.newFixedThreadPool(2);
 
-        executeAsync(executor)
+        executeAsync("42", executor)
             .thenAccept((result) -> System.out.println(result.result()));
 
         executor.shutdown();
     }
 
-    private CompletableFuture<Result> executeAsync(ExecutorService executor) {
-        CompletableFuture<Result> resultCompletableFuture = CompletableFuture
-            .supplyAsync(() -> collaboratorA.fetchData(), executor);
-        return resultCompletableFuture
+    private CompletableFuture<Result> executeAsync(String id, ExecutorService executor) {
+
+        return CompletableFuture
+            .supplyAsync(() -> collaboratorA.fetchData(id), executor)
             .thenCombine(
                 CompletableFuture.supplyAsync(
-                    collaboratorB::fetchData, executor),
+                    () -> collaboratorB.fetchData(id), executor
+                ),
                 (resultA, resultB) -> new Result("Combined: [" + resultA + "] + [" + resultB + "]")
             );
     }
 
     static class CollaboratorA {
-        public Result fetchData() {
+        public Result fetchData(String id) {
             try {
-                System.out.println("Calling collaborator A");
+                System.out.println("Calling collaborator A with id " + id);
                 Thread.sleep(1000);
             } catch (InterruptedException ignored) {
             }
@@ -41,9 +42,9 @@ public class CompletableFutureChainExample {
     }
 
     static class CollaboratorB {
-        public Result fetchData() {
+        public Result fetchData(String id) {
             try {
-                System.out.println("Calling collaborator B");
+                System.out.println("Calling collaborator B with id " + id);
                 Thread.sleep(1500);
             } catch (InterruptedException ignored) {
             }
