@@ -112,7 +112,8 @@ public class ThenCombineTimingExample {
                 (userId, userDetails) -> {
                     log("Final result: " + userId + ", " + userDetails);
                     return userId + ", " + userDetails;
-                })
+                }
+            )
             .thenAcceptBoth(
                 fetchOrder(),
                 (details, order) -> log("Final result: " + details + ", " + order))
