@@ -83,7 +83,7 @@ public class ThenCombineTimingExample {
         log("Main thread starts async chain");
 
         fetchUserId()
-            .thenCompose(this::fetchUserDetails)
+            .thenCompose((userId) -> fetchUserDetails(userId))
             .thenAccept(
                 (userDetails) -> {
                     log("Final result: " + userDetails);
@@ -165,6 +165,20 @@ public class ThenCombineTimingExample {
 
     BiFunction<String, String, String> concat = (String userId, String userDetails) -> userId + ", " + userDetails;
 
+    public void runEither() {
+        log("Main thread starts async chain");
+        fetchUserId()
+            .acceptEither(
+                fetchUserDetails(),
+                (firstResult) -> {
+                    log("Final result: " + firstResult);
+                }
+            )
+            .thenRun(executor::shutdown);
+
+        log("Main thread finished setup (non-blocking)");
+    }
+
     private void simulateDelay(long millis) {
         try {
             Thread.sleep(millis);
@@ -177,6 +191,6 @@ public class ThenCombineTimingExample {
     }
 
     public static void main(String[] args) {
-        new ThenCombineTimingExample().runAsyncWithTransformations();
+        new ThenCombineTimingExample().runEither();
     }
 }
