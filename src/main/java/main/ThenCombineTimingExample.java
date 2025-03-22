@@ -4,6 +4,9 @@ import java.time.LocalTime;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static java.util.concurrent.CompletableFuture.allOf;
 
@@ -128,7 +131,7 @@ public class ThenCombineTimingExample {
                 fetchUserDetails(),
                 (userId, userDetails) -> {
                     log("Final result: " + userId + ", " + userDetails);
-                    return userId + ", " + userDetails;
+                    return concat.apply(userId, userDetails);
                 }
             )
             .thenAcceptBoth(
@@ -145,16 +148,22 @@ public class ThenCombineTimingExample {
         fetchUserId()
             .thenCombine(
                 fetchUserDetails(),
-                (userId, userDetails) -> userId + ", " + userDetails
+                concat
             )
-            .thenApply((result) -> {
-                log("Final result: " + result);
-                return result.split(" ").length;
-            })
-            .thenAccept((length) -> log("Length of the output: " + length))
+            .thenApply(extracted)
+            .thenAccept(acceptResult)
             .thenRun(executor::shutdown);
         log("Main thread finished setup (non-blocking)");
     }
+
+    Consumer<Integer> acceptResult = (Integer length) -> log("Length of the output: " + length);
+
+    Function<String, Integer> extracted = (String result) -> {
+        log("Final result: " + result);
+        return result.split(" ").length;
+    };
+
+    BiFunction<String, String, String> concat = (String userId, String userDetails) -> userId + ", " + userDetails;
 
     private void simulateDelay(long millis) {
         try {
