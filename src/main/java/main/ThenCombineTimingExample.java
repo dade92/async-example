@@ -191,6 +191,6 @@ public class ThenCombineTimingExample {
     }
 
     public static void main(String[] args) {
-        new ThenCombineTimingExample().runEither();
+        new ThenCombineTimingExample().runThreeInParallel();
     }
 }
