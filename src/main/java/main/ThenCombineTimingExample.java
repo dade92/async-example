@@ -140,6 +140,22 @@ public class ThenCombineTimingExample {
         log("Main thread finished setup (non-blocking)");
     }
 
+    public void runAsyncWithTransformations() {
+        log("Main thread starts async chain");
+        fetchUserId()
+            .thenCombine(
+                fetchUserDetails(),
+                (userId, userDetails) -> userId + ", " + userDetails
+            )
+            .thenApply((result) -> {
+                log("Final result: " + result);
+                return result.split(" ").length;
+            })
+            .thenAccept((length) -> log("Length of the output: " + length))
+            .thenRun(executor::shutdown);
+        log("Main thread finished setup (non-blocking)");
+    }
+
     private void simulateDelay(long millis) {
         try {
             Thread.sleep(millis);
@@ -152,6 +168,6 @@ public class ThenCombineTimingExample {
     }
 
     public static void main(String[] args) {
-        new ThenCombineTimingExample().runIndependently();
+        new ThenCombineTimingExample().runAsyncWithTransformations();
     }
 }
