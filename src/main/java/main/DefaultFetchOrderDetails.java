@@ -61,13 +61,31 @@ public class DefaultFetchOrderDetails implements FetchOrderDetails {
             .join();
     }
 
+    public CompletableFuture<Details> fetchAsync(String token) {
+        return getOrders(token)
+            .thenCombine(
+                getUser(token),
+                (orders, user) -> {
+                    log("Completed both get orders and get user");
+                    return new Details(
+                        user, orders
+                    );
+                });
+    }
+
     public static void main(String[] args) {
         DefaultFetchOrderDetails defaultFetchOrderDetails = new DefaultFetchOrderDetails(
             new RestOrderRepository(),
             new RestUserRepository()
         );
 
-        Details details = defaultFetchOrderDetails.fetch("XXX");
-        System.out.println("Details retrieved: " + details);
+//        Details details = defaultFetchOrderDetails.fetch("XXX");
+//        System.out.println("Details retrieved: " + details);
+
+        defaultFetchOrderDetails.fetchAsync("XXX").thenAccept(
+            (details) -> {
+                System.out.println("Details retrieved: " + details);
+            }
+        );
     }
 }
