@@ -190,7 +190,4 @@ public class ThenCombineTimingExample {
         System.out.println(LocalTime.now() + " | " + message);
     }
 
-    public static void main(String[] args) {
-        new ThenCombineTimingExample().runThreeInParallel();
-    }
 }

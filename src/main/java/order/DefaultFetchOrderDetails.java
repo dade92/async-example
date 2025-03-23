@@ -79,22 +79,4 @@ public class DefaultFetchOrderDetails implements FetchOrderDetails {
                 });
     }
 
-    public static void main(String[] args) {
-        ExecutorService executor = Executors.newFixedThreadPool(4);
-
-        DefaultFetchOrderDetails defaultFetchOrderDetails = new DefaultFetchOrderDetails(
-            new RestOrderRepository(),
-            new RestUserRepository(),
-            executor
-        );
-
-//        Details details = defaultFetchOrderDetails.fetch("XXX);
-//        System.out.println("Details retrieved: " + details);
-
-        defaultFetchOrderDetails.fetchAsync("XXX")
-            .thenAccept(
-                (details) -> System.out.println("Details retrieved: " + details)
-            )
-            .thenRun(executor::shutdown);
-    }
 }

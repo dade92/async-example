@@ -52,11 +52,6 @@ public class CompletableFutureChainExample {
         }
     }
 
-    public static void main(String[] args) {
-        CompletableFutureChainExample example = new CompletableFutureChainExample();
-        example.performAsyncChainedCalls();
-    }
-
 }
 
 record Result(
