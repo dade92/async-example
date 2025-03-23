@@ -1,6 +1,5 @@
-package main;
+package order;
 
-import order.*;
 import user.RestUserRepository;
 import user.User;
 import user.UserRepository;

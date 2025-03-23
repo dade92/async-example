@@ -1,8 +1,5 @@
-package main;
+package order;
 
-import order.Details;
-import order.Order;
-import order.OrderRepository;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.lib.concurrent.Synchroniser;
