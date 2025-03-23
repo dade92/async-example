@@ -28,12 +28,11 @@ public class DefaultFetchOrderDetailsTest {
     private final OrderRepository orderRepository = context.mock(OrderRepository.class);
     private final UserRepository userRepository = context.mock(UserRepository.class);
     private DefaultFetchOrderDetails fetchOrderDetails;
-    private ExecutorService executor;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @BeforeEach
     public void setUp() {
-        fetchOrderDetails = new DefaultFetchOrderDetails(orderRepository, userRepository);
-        executor = Executors.newSingleThreadExecutor();
+        fetchOrderDetails = new DefaultFetchOrderDetails(orderRepository, userRepository, executor);
     }
 
     @AfterEach
@@ -55,7 +54,7 @@ public class DefaultFetchOrderDetailsTest {
             will(returnValue(user));
         }});
 
-        Details result = fetchOrderDetails.fetch(token, executor);
+        Details result = fetchOrderDetails.fetch(token);
 
         assertEquals(
             result,
@@ -80,7 +79,7 @@ public class DefaultFetchOrderDetailsTest {
             will(returnValue(user));
         }});
 
-        Details result = fetchOrderDetails.fetchAsync(token, executor).join();
+        Details result = fetchOrderDetails.fetchAsync(token).join();
 
         assertEquals(
             result,

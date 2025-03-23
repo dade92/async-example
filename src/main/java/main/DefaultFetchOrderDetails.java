@@ -15,16 +15,19 @@ public class DefaultFetchOrderDetails implements FetchOrderDetails {
 
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
+    private final ExecutorService executor;
 
     public DefaultFetchOrderDetails(
         OrderRepository orderRepository,
-        UserRepository userRepository
+        UserRepository userRepository,
+        ExecutorService executor
     ) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
+        this.executor = executor;
     }
 
-    CompletableFuture<List<Order>> getOrders(String token, ExecutorService executor) {
+    CompletableFuture<List<Order>> getOrders(String token) {
         return CompletableFuture.supplyAsync(
             () -> {
                 log("Starting getOrders");
@@ -36,7 +39,7 @@ public class DefaultFetchOrderDetails implements FetchOrderDetails {
         );
     }
 
-    CompletableFuture<User> getUser(String token, ExecutorService executor) {
+    CompletableFuture<User> getUser(String token) {
         return CompletableFuture.supplyAsync(
             () -> {
                 log("Starting getUser");
@@ -52,10 +55,10 @@ public class DefaultFetchOrderDetails implements FetchOrderDetails {
         System.out.println(LocalTime.now() + " | " + message);
     }
 
-    public Details fetch(String token, ExecutorService executor) {
-        return getOrders(token, executor)
+    public Details fetch(String token) {
+        return getOrders(token)
             .thenCombine(
-                getUser(token, executor),
+                getUser(token),
                 (orders, user) -> {
                     log("Completed both get orders and get user");
                     return new Details(
@@ -65,10 +68,10 @@ public class DefaultFetchOrderDetails implements FetchOrderDetails {
             .join();
     }
 
-    public CompletableFuture<Details> fetchAsync(String token, ExecutorService executor) {
-        return getOrders(token, executor)
+    public CompletableFuture<Details> fetchAsync(String token) {
+        return getOrders(token)
             .thenCombine(
-                getUser(token, executor),
+                getUser(token),
                 (orders, user) -> {
                     log("Completed both get orders and get user");
                     return new Details(
@@ -82,13 +85,14 @@ public class DefaultFetchOrderDetails implements FetchOrderDetails {
 
         DefaultFetchOrderDetails defaultFetchOrderDetails = new DefaultFetchOrderDetails(
             new RestOrderRepository(),
-            new RestUserRepository()
+            new RestUserRepository(),
+            executor
         );
 
-//        Details details = defaultFetchOrderDetails.fetch("XXX", executor);
+//        Details details = defaultFetchOrderDetails.fetch("XXX);
 //        System.out.println("Details retrieved: " + details);
 
-        defaultFetchOrderDetails.fetchAsync("XXX", executor)
+        defaultFetchOrderDetails.fetchAsync("XXX")
             .thenAccept(
                 (details) -> System.out.println("Details retrieved: " + details)
             )
