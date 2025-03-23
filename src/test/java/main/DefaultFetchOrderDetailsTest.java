@@ -7,7 +7,6 @@ import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.lib.concurrent.Synchroniser;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import user.User;
@@ -18,21 +17,21 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class DefaultFetchOrderDetailsTest {
 
-    private Mockery context;
-    private OrderRepository orderRepository;
-    private UserRepository userRepository;
+    private final Mockery context = new Mockery() {{
+        setThreadingPolicy(new Synchroniser());
+    }};
+
+    private final OrderRepository orderRepository = context.mock(OrderRepository.class);
+    private final UserRepository userRepository = context.mock(UserRepository.class);
     private DefaultFetchOrderDetails fetchOrderDetails;
     private ExecutorService executor;
 
     @BeforeEach
     public void setUp() {
-        context = new Mockery() {{
-            setThreadingPolicy(new Synchroniser());
-        }};
-        orderRepository = context.mock(OrderRepository.class);
-        userRepository = context.mock(UserRepository.class);
         fetchOrderDetails = new DefaultFetchOrderDetails(orderRepository, userRepository);
         executor = Executors.newSingleThreadExecutor();
     }
@@ -43,32 +42,32 @@ public class DefaultFetchOrderDetailsTest {
     }
 
     @Test
-    public void testFetchReturnsCombinedDetails() {
+    public void fetchHappyPath() {
         String token = "token";
-        User mockedUser = new User("XXX", "JDoe");
-        List<Order> mockedOrders = List.of(new Order("order1", BigDecimal.TEN), new Order("order2", BigDecimal.TEN));
+        User user = new User("XXX", "JDoe");
+        List<Order> orders = List.of(new Order("order1", BigDecimal.TEN), new Order("order2", BigDecimal.TEN));
 
         context.checking(new Expectations() {{
             oneOf(orderRepository).retrieveByUserToken(token);
-            will(returnValue(mockedOrders));
+            will(returnValue(orders));
 
             oneOf(userRepository).findByToken(token);
-            will(returnValue(mockedUser));
+            will(returnValue(user));
         }});
 
         Details result = fetchOrderDetails.fetch(token, executor);
 
-        Assertions.assertEquals(
+        assertEquals(
             result,
             new Details(
-                mockedUser,
-                mockedOrders
+                user,
+                orders
             )
         );
     }
 
     @Test
-    public void testFetchAsyncReturnsCombinedDetails() throws Exception {
+    public void fetchAsyncHappyPath() throws Exception {
         String token = "token";
         User user = new User("AAA", "Alice");
         List<Order> orders = List.of(new Order("orderX", BigDecimal.TEN));
@@ -83,7 +82,7 @@ public class DefaultFetchOrderDetailsTest {
 
         Details result = fetchOrderDetails.fetchAsync(token, executor).join();
 
-        Assertions.assertEquals(
+        assertEquals(
             result,
             new Details(
                 user,
