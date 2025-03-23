@@ -27,7 +27,7 @@ public class DefaultFetchOrderDetails implements FetchOrderDetails {
         this.executor = executor;
     }
 
-    CompletableFuture<List<Order>> getOrders(String token) {
+    private CompletableFuture<List<Order>> getOrders(String token) {
         return CompletableFuture.supplyAsync(
             () -> {
                 log("Starting getOrders");
@@ -39,7 +39,7 @@ public class DefaultFetchOrderDetails implements FetchOrderDetails {
         );
     }
 
-    CompletableFuture<User> getUser(String token) {
+    private CompletableFuture<User> getUser(String token) {
         return CompletableFuture.supplyAsync(
             () -> {
                 log("Starting getUser");
