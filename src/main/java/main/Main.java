@@ -1,7 +1,6 @@
 package main;
 
 import experimental.Experiment;
-import order.DefaultFetchOrderDetails;
 import order.RestOrderRepository;
 import user.RestUserRepository;
 
@@ -12,7 +11,7 @@ public class Main {
 
     public static void main(String[] args) {
         ExecutorService executor = Executors.newFixedThreadPool(4);
-//
+
 //        DefaultFetchOrderDetails defaultFetchOrderDetails = new DefaultFetchOrderDetails(
 //            new RestOrderRepository(),
 //            new RestUserRepository(),
@@ -34,6 +33,10 @@ public class Main {
             new RestOrderRepository(),
             new RestUserRepository(),
             executor
-        ).run();
+        ).run("my-token")
+            .thenAccept(
+                details -> System.out.println("Final details: " + details)
+            )
+            .thenRun(executor::shutdown);
     }
 }

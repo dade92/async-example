@@ -14,29 +14,34 @@ class Experiment(
     private val executor: ExecutorService
 ) {
 
-    private fun getOrder(id: String): CompletableFuture<List<Order>> =
-        CompletableFuture.supplyAsync({
-            println("Getting orders")
-            val orders = orderRepository.retrieveByUserToken(id)
-            println("Getting orders finished")
-            orders
-        }, executor)
+    private fun getOrder(token: String): CompletableFuture<List<Order>> =
+        CompletableFuture.supplyAsync(
+            {
+                println("Getting orders")
+                val orders = orderRepository.retrieveByUserToken(token)
+                println("Getting orders finished")
+                orders
+            },
+            executor
+        )
 
     private fun getUser(token: String): CompletableFuture<User> =
-        CompletableFuture.supplyAsync({
-            println("Getting user")
-            val user = userRepository.findByToken(token)
-            println("Getting user finished")
-            user
-        }, executor)
+        CompletableFuture.supplyAsync(
+            {
+                println("Getting user")
+                val user = userRepository.findByToken(token)
+                println("Getting user finished")
+                user
+            },
+            executor
+        )
 
-    fun run() {
+    fun run(token: String): CompletableFuture<Details> {
         println("Experiment started!")
-        getOrder("XXX")
+        return getOrder(token)
             .thenCombine(
-                getUser("token")
+                getUser(token)
             ) { orders, user -> Details(user, orders) }
-            .thenRun { executor.shutdown() }
     }
 
 }
