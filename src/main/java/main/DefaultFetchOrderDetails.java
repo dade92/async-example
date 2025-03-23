@@ -1,8 +1,6 @@
 package main;
 
-import order.Order;
-import order.OrderRepository;
-import order.RestOrderRepository;
+import order.*;
 import user.RestUserRepository;
 import user.User;
 import user.UserRepository;

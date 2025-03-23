@@ -1,6 +1,5 @@
-package main;
+package order;
 
-import order.Order;
 import user.User;
 
 import java.util.List;
