@@ -8,8 +8,12 @@ import user.UserRepository;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class DefaultFetchOrderDetails implements FetchOrderDetails {
+
+    ExecutorService executor = Executors.newFixedThreadPool(2);
 
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
@@ -29,7 +33,8 @@ public class DefaultFetchOrderDetails implements FetchOrderDetails {
                 List<Order> order = orderRepository.retrieveByUserToken(token);
                 log("Finishing getOrders");
                 return order;
-            }
+            },
+            executor
         );
     }
 
@@ -40,7 +45,8 @@ public class DefaultFetchOrderDetails implements FetchOrderDetails {
                 User user = userRepository.findByToken(token);
                 log("Finishing getUser");
                 return user;
-            }
+            },
+            executor
         );
     }
 
@@ -73,6 +79,10 @@ public class DefaultFetchOrderDetails implements FetchOrderDetails {
                 });
     }
 
+    public void shutdown() {
+        executor.shutdown();
+    }
+
     public static void main(String[] args) {
         DefaultFetchOrderDetails defaultFetchOrderDetails = new DefaultFetchOrderDetails(
             new RestOrderRepository(),
@@ -82,10 +92,10 @@ public class DefaultFetchOrderDetails implements FetchOrderDetails {
 //        Details details = defaultFetchOrderDetails.fetch("XXX");
 //        System.out.println("Details retrieved: " + details);
 
-        defaultFetchOrderDetails.fetchAsync("XXX").thenAccept(
-            (details) -> {
-                System.out.println("Details retrieved: " + details);
-            }
-        );
+        defaultFetchOrderDetails.fetchAsync("XXX")
+            .thenAccept(
+                (details) -> System.out.println("Details retrieved: " + details)
+            )
+            .thenRun(defaultFetchOrderDetails::shutdown);
     }
 }
