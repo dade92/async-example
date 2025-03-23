@@ -71,7 +71,7 @@ public class DefaultFetchOrderDetailsTest {
     }
 
     @Test
-    public void fetchAsyncHappyPath() throws Exception {
+    public void fetchAsyncHappyPath() {
         String token = "token";
         User user = new User("AAA", "Alice");
         List<Order> orders = List.of(new Order("orderX", BigDecimal.TEN));
