@@ -24,11 +24,11 @@ public class DefaultFetchOrderDetailsTest {
     private final Mockery context = new Mockery() {{
         setThreadingPolicy(new Synchroniser());
     }};
-
     private final OrderRepository orderRepository = context.mock(OrderRepository.class);
     private final UserRepository userRepository = context.mock(UserRepository.class);
-    private DefaultFetchOrderDetails fetchOrderDetails;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+
+    private DefaultFetchOrderDetails fetchOrderDetails;
 
     @BeforeEach
     public void setUp() {
@@ -44,7 +44,10 @@ public class DefaultFetchOrderDetailsTest {
     public void fetchHappyPath() {
         String token = "token";
         User user = new User("XXX", "JDoe");
-        List<Order> orders = List.of(new Order("order1", BigDecimal.TEN), new Order("order2", BigDecimal.TEN));
+        List<Order> orders = List.of(
+            new Order("order1", BigDecimal.TEN),
+            new Order("order2", BigDecimal.TEN)
+        );
 
         context.checking(new Expectations() {{
             oneOf(orderRepository).retrieveByUserToken(token);
@@ -57,11 +60,11 @@ public class DefaultFetchOrderDetailsTest {
         Details result = fetchOrderDetails.fetch(token);
 
         assertEquals(
-            result,
             new Details(
                 user,
                 orders
-            )
+            ),
+            result
         );
     }
 
@@ -82,11 +85,11 @@ public class DefaultFetchOrderDetailsTest {
         Details result = fetchOrderDetails.fetchAsync(token).join();
 
         assertEquals(
-            result,
             new Details(
                 user,
                 orders
-            )
+            ),
+            result
         );
 
     }
