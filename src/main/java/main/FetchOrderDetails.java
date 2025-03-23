@@ -7,6 +7,8 @@ import user.RestUserRepository;
 import user.User;
 import user.UserRepository;
 
+import java.time.LocalTime;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class FetchOrderDetails {
@@ -22,10 +24,13 @@ public class FetchOrderDetails {
         this.userRepository = userRepository;
     }
 
-    CompletableFuture<Order> getOrder(String orderId) {
+    CompletableFuture<List<Order>> getOrders(String token) {
         return CompletableFuture.supplyAsync(
             () -> {
-                return orderRepository.retrieve(orderId);
+                log("Starting getOrders");
+                List<Order> order = orderRepository.retrieveByUserToken(token);
+                log("Finishing getOrders");
+                return order;
             }
         );
     }
@@ -33,12 +38,19 @@ public class FetchOrderDetails {
     CompletableFuture<User> getUser(String token) {
         return CompletableFuture.supplyAsync(
             () -> {
-                return userRepository.findByToken(token);
+                log("Starting getUser");
+                User user = userRepository.findByToken(token);
+                log("Finishing getUser");
+                return user;
             }
         );
     }
 
-    public void run() {
+    private void log(String message) {
+        System.out.println(LocalTime.now() + " | " + message);
+    }
+
+    public void run(String token, String orderId) {
 //        TODO
     }
 
@@ -48,6 +60,6 @@ public class FetchOrderDetails {
             new RestUserRepository()
         );
 
-        fetchOrderDetails.run();
+        fetchOrderDetails.run("XXX", "666");
     }
 }

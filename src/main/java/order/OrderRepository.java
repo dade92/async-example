@@ -1,7 +1,7 @@
 package order;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 public interface OrderRepository {
-    Order retrieve(String orderId);
+    List<Order> retrieveByUserToken(String orderId);
 }
