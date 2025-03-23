@@ -14,10 +14,12 @@ import user.UserRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class DefaultFetchOrderDetailsTest {
 
@@ -91,6 +93,39 @@ public class DefaultFetchOrderDetailsTest {
             ),
             result
         );
+    }
 
+    @Test
+    void orderRepositoryFails() {
+        String token = "failToken";
+
+        context.checking(new Expectations() {{
+            oneOf(orderRepository).retrieveByUserToken(token);
+            will(throwException(new RuntimeException("Order repo failure")));
+
+            oneOf(userRepository).findByToken(token);
+            will(returnValue(new User("XXX", "Alice")));
+        }});
+
+        assertThrows(CompletionException.class, () -> {
+            fetchOrderDetails.fetch(token);
+        });
+    }
+
+    @Test
+    void userRepositoryFails() {
+        String token = "failToken";
+
+        context.checking(new Expectations() {{
+            oneOf(orderRepository).retrieveByUserToken(token);
+            will(returnValue(List.of()));
+
+            oneOf(userRepository).findByToken(token);
+            will(throwException(new RuntimeException("Order repo failure")));
+        }});
+
+        assertThrows(CompletionException.class, () -> {
+            fetchOrderDetails.fetch(token);
+        });
     }
 }
