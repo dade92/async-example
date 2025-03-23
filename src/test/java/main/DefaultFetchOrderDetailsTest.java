@@ -121,11 +121,24 @@ public class DefaultFetchOrderDetailsTest {
             will(returnValue(List.of()));
 
             oneOf(userRepository).findByToken(token);
-            will(throwException(new RuntimeException("Order repo failure")));
+            will(throwException(new RuntimeException("User repo failure")));
         }});
 
-        assertThrows(CompletionException.class, () -> {
-            fetchOrderDetails.fetch(token);
-        });
+        assertThrows(CompletionException.class, () -> fetchOrderDetails.fetch(token));
+    }
+
+    @Test
+    void allRepositoryFail() {
+        String token = "failToken";
+
+        context.checking(new Expectations() {{
+            oneOf(orderRepository).retrieveByUserToken(token);
+            will(throwException(new RuntimeException("Order repo failure")));
+
+            oneOf(userRepository).findByToken(token);
+            will(throwException(new RuntimeException("User repo failure")));
+        }});
+
+        assertThrows(CompletionException.class, () -> fetchOrderDetails.fetch(token));
     }
 }
