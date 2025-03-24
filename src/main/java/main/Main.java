@@ -1,6 +1,7 @@
 package main;
 
 import experimental.Experiment;
+import order.DefaultFetchOrderDetails;
 import order.RestOrderRepository;
 import user.RestUserRepository;
 import utils.Logger;
@@ -15,23 +16,31 @@ public class Main {
 
         ExecutorService executor = Executors.newFixedThreadPool(4);
 
-//        DefaultFetchOrderDetails defaultFetchOrderDetails = new DefaultFetchOrderDetails(
-//            new RestOrderRepository(),
-//            new RestUserRepository(),
-//            executor
-//        );
-//
-////        Details details = defaultFetchOrderDetails.fetch("XXX);
-////        System.out.println("Details retrieved: " + details);
-//
-//        defaultFetchOrderDetails.fetchAsync("XXX")
-//            .thenAccept(
-//                (details) -> System.out.println("Details retrieved: " + details)
-//            )
-//            .thenRun(executor::shutdown);
+//        executeFetchDetails(executor);
 
-//        new ThenCombineTimingExample().runThreeInParallel();
-//        new CompletableFutureChainExample().performAsyncChainedCalls();
+        executeExperiment(executor);
+
+        Logger.log("Main ends");
+    }
+
+    private static void executeFetchDetails(ExecutorService executor) {
+        DefaultFetchOrderDetails defaultFetchOrderDetails = new DefaultFetchOrderDetails(
+            new RestOrderRepository(),
+            new RestUserRepository(),
+            executor
+        );
+
+//        Details details = defaultFetchOrderDetails.fetch("XXX);
+//        System.out.println("Details retrieved: " + details);
+
+        defaultFetchOrderDetails.fetchAsync("XXX")
+            .thenAccept(
+                (details) -> Logger.log("Details retrieved: " + details)
+            )
+            .thenRun(executor::shutdown);
+    }
+
+    private static void executeExperiment(ExecutorService executor) {
         new Experiment(
             new RestOrderRepository(),
             new RestUserRepository(),
@@ -41,7 +50,5 @@ public class Main {
                 details -> Logger.log("Final details: " + details)
             )
             .thenRun(executor::shutdown);
-
-        Logger.log("Main ends");
     }
 }
