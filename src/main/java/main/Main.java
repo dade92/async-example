@@ -3,6 +3,7 @@ package main;
 import experimental.Experiment;
 import order.RestOrderRepository;
 import user.RestUserRepository;
+import utils.Logger;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -10,6 +11,8 @@ import java.util.concurrent.Executors;
 public class Main {
 
     public static void main(String[] args) {
+        Logger.log("Main starts");
+
         ExecutorService executor = Executors.newFixedThreadPool(4);
 
 //        DefaultFetchOrderDetails defaultFetchOrderDetails = new DefaultFetchOrderDetails(
@@ -35,8 +38,10 @@ public class Main {
             executor
         ).run("my-token")
             .thenAccept(
-                details -> System.out.println("Final details: " + details)
+                details -> Logger.log("Final details: " + details)
             )
             .thenRun(executor::shutdown);
+
+        Logger.log("Main ends");
     }
 }

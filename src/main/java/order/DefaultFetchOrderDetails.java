@@ -1,14 +1,13 @@
 package order;
 
-import user.RestUserRepository;
 import user.User;
 import user.UserRepository;
+import utils.Logger;
 
 import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class DefaultFetchOrderDetails implements FetchOrderDetails {
 
@@ -29,9 +28,9 @@ public class DefaultFetchOrderDetails implements FetchOrderDetails {
     private CompletableFuture<List<Order>> getOrders(String token) {
         return CompletableFuture.supplyAsync(
             () -> {
-                log("Starting getOrders");
+                Logger.log("Starting getOrders");
                 List<Order> order = orderRepository.retrieveByUserToken(token);
-                log("Finishing getOrders");
+                Logger.log("Finishing getOrders");
                 return order;
             },
             executor
@@ -41,17 +40,13 @@ public class DefaultFetchOrderDetails implements FetchOrderDetails {
     private CompletableFuture<User> getUser(String token) {
         return CompletableFuture.supplyAsync(
             () -> {
-                log("Starting getUser");
+                Logger.log("Starting getUser");
                 User user = userRepository.findByToken(token);
-                log("Finishing getUser");
+                Logger.log("Finishing getUser");
                 return user;
             },
             executor
         );
-    }
-
-    private void log(String message) {
-        System.out.println(LocalTime.now() + " | " + message);
     }
 
     public Details fetch(String token) {
@@ -59,7 +54,7 @@ public class DefaultFetchOrderDetails implements FetchOrderDetails {
             .thenCombine(
                 getUser(token),
                 (orders, user) -> {
-                    log("Completed both get orders and get user");
+                    Logger.log("Completed both get orders and get user");
                     return new Details(
                         user, orders
                     );
@@ -72,7 +67,7 @@ public class DefaultFetchOrderDetails implements FetchOrderDetails {
             .thenCombine(
                 getUser(token),
                 (orders, user) -> {
-                    log("Completed both get orders and get user");
+                    Logger.log("Completed both get orders and get user");
                     return new Details(
                         user, orders
                     );

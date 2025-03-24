@@ -5,6 +5,7 @@ import order.Order
 import order.OrderRepository
 import user.User
 import user.UserRepository
+import utils.Logger
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutorService
 
@@ -17,9 +18,9 @@ class Experiment(
     private fun getOrder(token: String): CompletableFuture<List<Order>> =
         CompletableFuture.supplyAsync(
             {
-                println("Getting orders")
+                Logger.log("Getting orders")
                 val orders = orderRepository.retrieveByUserToken(token)
-                println("Getting orders finished")
+                Logger.log("Getting orders finished")
                 orders
             },
             executor
@@ -28,16 +29,16 @@ class Experiment(
     private fun getUser(token: String): CompletableFuture<User> =
         CompletableFuture.supplyAsync(
             {
-                println("Getting user")
+                Logger.log("Getting user")
                 val user = userRepository.findByToken(token)
-                println("Getting user finished")
+                Logger.log("Getting user finished")
                 user
             },
             executor
         )
 
     fun run(token: String): CompletableFuture<Details> {
-        println("Experiment started!")
+        Logger.log("Experiment started!")
         return getOrder(token)
             .thenCombine(
                 getUser(token)
