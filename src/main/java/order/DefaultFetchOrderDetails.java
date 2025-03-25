@@ -1,13 +1,14 @@
 package order;
 
+import org.jetbrains.annotations.NotNull;
 import user.User;
 import user.UserRepository;
 import utils.Logger;
 
-import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
+import java.util.function.BiFunction;
 
 public class DefaultFetchOrderDetails implements FetchOrderDetails {
 
@@ -53,25 +54,26 @@ public class DefaultFetchOrderDetails implements FetchOrderDetails {
         return getOrders(token)
             .thenCombine(
                 getUser(token),
-                (orders, user) -> {
-                    Logger.log("Completed both get orders and get user");
-                    return new Details(
-                        user, orders
-                    );
-                })
+                combineUserWithOrders()
+            )
             .join();
+    }
+
+    @NotNull
+    private static BiFunction<List<Order>, User, Details> combineUserWithOrders() {
+        return (orders, user) -> {
+            Logger.log("Completed both get orders and get user");
+            return new Details(
+                user, orders
+            );
+        };
     }
 
     public CompletableFuture<Details> fetchAsync(String token) {
         return getOrders(token)
             .thenCombine(
                 getUser(token),
-                (orders, user) -> {
-                    Logger.log("Completed both get orders and get user");
-                    return new Details(
-                        user, orders
-                    );
-                });
+                combineUserWithOrders());
     }
 
 }

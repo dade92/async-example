@@ -18,7 +18,7 @@ public class Main {
 
 //        executeFetchDetails(executor);
 
-        executeExperiment(executor);
+        executeAsyncKotlin(executor);
 
         Logger.log("Main ends");
     }
@@ -40,7 +40,7 @@ public class Main {
             .thenRun(executor::shutdown);
     }
 
-    private static void executeExperiment(ExecutorService executor) {
+    private static void executeAsyncKotlin(ExecutorService executor) {
         new Experiment(
             new RestOrderRepository(),
             new RestUserRepository(),
