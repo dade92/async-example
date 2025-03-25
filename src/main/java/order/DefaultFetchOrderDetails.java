@@ -57,19 +57,19 @@ public class DefaultFetchOrderDetails implements FetchOrderDetails {
             .join();
     }
 
-    private static Details combineUserWithOrders(List<Order> orders, User user) {
-        Logger.log("Completed both get orders and get user");
-        return new Details(
-            user, orders
-        );
-    }
-
     public CompletableFuture<Details> fetchAsync(String token) {
         return getOrders(token)
             .thenCombine(
                 getUser(token),
                 DefaultFetchOrderDetails::combineUserWithOrders
             );
+    }
+
+    private static Details combineUserWithOrders(List<Order> orders, User user) {
+        Logger.log("Completed both get orders and get user");
+        return new Details(
+            user, orders
+        );
     }
 
 }
