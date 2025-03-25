@@ -15,6 +15,7 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -43,7 +44,7 @@ public class DefaultFetchOrderDetailsTest {
     public void fetchHappyPath() {
         String token = "token";
         User user = new User("XXX", "JDoe");
-        List<Order> orders = List.of(
+        List<Order> orders = of(
             new Order("order1", BigDecimal.TEN),
             new Order("order2", BigDecimal.TEN)
         );
@@ -56,22 +57,21 @@ public class DefaultFetchOrderDetailsTest {
             will(returnValue(user));
         }});
 
-        Details result = fetchOrderDetails.fetch(token);
+        Details actual = fetchOrderDetails.fetch(token);
 
-        assertEquals(
-            new Details(
-                user,
-                orders
-            ),
-            result
+        Details expected = new Details(
+            user,
+            orders
         );
+
+        assertEquals(expected, actual);
     }
 
     @Test
     public void fetchAsyncHappyPath() {
         String token = "token";
         User user = new User("AAA", "Alice");
-        List<Order> orders = List.of(new Order("orderX", BigDecimal.TEN));
+        List<Order> orders = of(new Order("orderX", BigDecimal.TEN));
 
         context.checking(new Expectations() {{
             oneOf(orderRepository).retrieveByUserToken(token);
@@ -81,15 +81,14 @@ public class DefaultFetchOrderDetailsTest {
             will(returnValue(user));
         }});
 
-        Details result = fetchOrderDetails.fetchAsync(token).join();
+        Details actual = fetchOrderDetails.fetchAsync(token).join();
 
-        assertEquals(
-            new Details(
-                user,
-                orders
-            ),
-            result
+        Details expected = new Details(
+            user,
+            orders
         );
+
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -115,7 +114,7 @@ public class DefaultFetchOrderDetailsTest {
 
         context.checking(new Expectations() {{
             oneOf(orderRepository).retrieveByUserToken(token);
-            will(returnValue(List.of()));
+            will(returnValue(of()));
 
             oneOf(userRepository).findByToken(token);
             will(throwException(new RuntimeException("User repo failure")));
