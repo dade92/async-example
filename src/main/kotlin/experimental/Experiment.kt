@@ -42,7 +42,10 @@ class Experiment(
         return getOrder(token)
             .thenCombine(
                 getUser(token)
-            ) { orders, user -> Details(user, orders) }
+            ) { orders, user ->
+                Logger.log("Building final details...")
+                Details(user, orders)
+            }
     }
 
 }
