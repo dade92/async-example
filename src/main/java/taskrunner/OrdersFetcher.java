@@ -13,10 +13,10 @@ public class OrdersFetcher {
 
     public OrdersFetcher(
         MultiTaskRunner<Order> multiTaskRunner,
-        OrderRepository singleOrderFetcher
+        OrderRepository orderRepository
     ) {
         this.multiTaskRunner = multiTaskRunner;
-        this.singleOrderFetcher = singleOrderFetcher;
+        this.singleOrderFetcher = orderRepository;
     }
 
     public List<Order> fetchAll(List<String> orderIds) {
