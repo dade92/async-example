@@ -6,15 +6,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class MultiTaskRunner<E> {
+public class MultiTaskRunner<T> {
     private final ExecutorService executor;
 
     public MultiTaskRunner(ExecutorService executor) {
         this.executor = executor;
     }
 
-    public List<E> runTasks(List<Supplier<E>> tasks) {
-        List<CompletableFuture<E>> futures =
+    public List<T> runTasks(List<Supplier<T>> tasks) {
+        List<CompletableFuture<T>> futures =
             tasks.stream()
                 .map(task -> CompletableFuture.supplyAsync(task, executor))
                 .toList();
