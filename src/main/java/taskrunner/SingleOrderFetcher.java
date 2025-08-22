@@ -1,5 +1,9 @@
 package taskrunner;
 
+import order.Order;
+
+import java.math.BigDecimal;
+
 public class SingleOrderFetcher {
     public Order fetch(String orderId) {
         try {
@@ -12,6 +16,6 @@ public class SingleOrderFetcher {
     }
 
     private static Order buildResult(String orderId) {
-        return new Order(orderId);
+        return new Order(orderId, BigDecimal.TEN);
     }
 }

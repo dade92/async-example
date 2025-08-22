@@ -1,12 +1,13 @@
 package taskrunner;
 
+import order.Order;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,17 +36,17 @@ class OrdersFetcherTest {
 
         when(multiTaskRunner.runTasks(anyList())).thenReturn(
             List.of(
-                new Order("order-1"),
-                new Order("order-2"),
-                new Order("order-3"))
+                new Order("order-1", BigDecimal.TEN),
+                new Order("order-2", BigDecimal.TEN),
+                new Order("order-3", BigDecimal.TEN))
         );
 
         List<Order> orders = ordersFetcher.fetchAll(orderIds);
 
         assertEquals(List.of(
-                new Order("order-1"),
-                new Order("order-2"),
-                new Order("order-3")),
+                new Order("order-1", BigDecimal.TEN),
+                new Order("order-2", BigDecimal.TEN),
+                new Order("order-3", BigDecimal.TEN)),
             orders);
     }
 
