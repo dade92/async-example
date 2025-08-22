@@ -12,9 +12,13 @@ public class Main {
 
         OrderFetcher orderFetcher = new OrderFetcher();
 
-        new OrdersFetcher(
-            new MultiTaskRunner(executor),
-            orderFetcher
-        ).fetchAll(orderIds);
+        try {
+            new OrdersFetcher(
+                new MultiTaskRunner(executor),
+                orderFetcher
+            ).fetchAll(orderIds);
+        } finally {
+            executor.shutdown();
+        }
     }
 }
