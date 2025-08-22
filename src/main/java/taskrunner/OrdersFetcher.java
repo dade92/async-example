@@ -20,10 +20,14 @@ public class OrdersFetcher {
         List<Supplier<Order>> tasks =
             orderIds
                 .stream()
-                .map(orderId -> (Supplier<Order>) () -> singleOrderFetcher.fetch(orderId))
+                .map(this::getOrderSupplier)
                 .toList();
 
         return multiTaskRunner.runTasks(tasks);
+    }
+
+    private Supplier<Order> getOrderSupplier(String orderId) {
+        return () -> singleOrderFetcher.fetch(orderId);
     }
 
 }
