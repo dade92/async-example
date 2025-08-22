@@ -8,7 +8,6 @@ public class SingleOrderFetcher {
             Thread.currentThread().interrupt();
             System.err.println("Task " + orderId + " was interrupted");
         }
-        String data = "data-from-task-" + orderId;
         return buildResult(orderId);
     }
 
