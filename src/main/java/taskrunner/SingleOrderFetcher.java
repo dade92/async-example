@@ -1,7 +1,7 @@
 package taskrunner;
 
 public class SingleOrderFetcher {
-    public String fetch(String orderId) {
+    public Order fetch(String orderId) {
         try {
             Thread.sleep(1000L);
         } catch (InterruptedException e) {
@@ -12,8 +12,7 @@ public class SingleOrderFetcher {
         return buildResult(orderId, data);
     }
 
-    private static String buildResult(String orderId, String data) {
-        return "Task " + orderId + " produced " + data +
-            " on " + Thread.currentThread().getName();
+    private static Order buildResult(String orderId, String data) {
+        return new Order(orderId);
     }
 }

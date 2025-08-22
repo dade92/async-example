@@ -1,5 +1,6 @@
 package taskrunner;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -9,7 +10,7 @@ public class Main {
     public static void main(String[] args) {
         ExecutorService executor = Executors.newFixedThreadPool(3);
         SingleOrderFetcher singleOrderFetcher = new SingleOrderFetcher();
-        MultiTaskRunner<String> multiTaskRunner = new MultiTaskRunner<>(executor);
+        MultiTaskRunner<Order> multiTaskRunner = new MultiTaskRunner<>(executor);
 
         OrdersFetcher ordersFetcher = new OrdersFetcher(
             multiTaskRunner,
@@ -17,7 +18,8 @@ public class Main {
         );
 
         try {
-            ordersFetcher.fetchAll(of("123", "456", "789"));
+            List<Order> orders = ordersFetcher.fetchAll(of("123", "456", "789"));
+            orders.forEach(System.out::println);
         } finally {
             executor.shutdown();
         }

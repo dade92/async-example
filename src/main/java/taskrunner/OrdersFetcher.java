@@ -5,29 +5,26 @@ import java.util.function.Supplier;
 
 public class OrdersFetcher {
 
-    private final MultiTaskRunner<String> multiTaskRunner;
+    private final MultiTaskRunner<Order> multiTaskRunner;
     private final SingleOrderFetcher singleOrderFetcher;
 
     public OrdersFetcher(
-        MultiTaskRunner<String> multiTaskRunner,
+        MultiTaskRunner<Order> multiTaskRunner,
         SingleOrderFetcher singleOrderFetcher
     ) {
         this.multiTaskRunner = multiTaskRunner;
         this.singleOrderFetcher = singleOrderFetcher;
     }
 
-    public List<String> fetchAll(List<String> orderIds) {
-        List<Supplier<String>> tasks =
+    public List<Order> fetchAll(List<String> orderIds) {
+        List<Supplier<Order>> tasks =
             orderIds
                 .stream()
-                .map(orderId -> (Supplier<String>) () -> singleOrderFetcher.fetch(orderId))
+                .map(orderId -> (Supplier<Order>) () -> singleOrderFetcher.fetch(orderId))
                 .toList();
 
         long startTime = System.nanoTime();
-        List<String> orders = multiTaskRunner.runTasks(tasks);
-
-        orders.forEach(System.out::println);
-
+        List<Order> orders = multiTaskRunner.runTasks(tasks);
         long endTime = System.nanoTime();
         long durationMs = (endTime - startTime) / 1_000_000;
 
