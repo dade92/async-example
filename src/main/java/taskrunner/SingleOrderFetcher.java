@@ -1,6 +1,6 @@
 package taskrunner;
 
-public class OrderFetcher {
+public class SingleOrderFetcher {
     public String fetch(String orderId) {
         try {
             Thread.sleep(1000L);

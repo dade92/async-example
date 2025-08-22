@@ -7,16 +7,16 @@ import java.util.concurrent.Executors;
 public class Main {
     public static void main(String[] args) {
         ExecutorService executor = Executors.newFixedThreadPool(3);
+        SingleOrderFetcher singleOrderFetcher = new SingleOrderFetcher();
+        MultiTaskRunner multiTaskRunner = new MultiTaskRunner(executor);
 
-        List<String> orderIds = List.of("123", "456", "789");
-
-        OrderFetcher orderFetcher = new OrderFetcher();
+        OrdersFetcher ordersFetcher = new OrdersFetcher(
+            multiTaskRunner,
+            singleOrderFetcher
+        );
 
         try {
-            new OrdersFetcher(
-                new MultiTaskRunner(executor),
-                orderFetcher
-            ).fetchAll(orderIds);
+            ordersFetcher.fetchAll(List.of("123", "456", "789"));
         } finally {
             executor.shutdown();
         }
