@@ -21,11 +21,10 @@ public class MultiTaskRunner {
             futures.add(CompletableFuture.supplyAsync(() -> runTask(taskId), executor));
         }
 
-        CompletableFuture<Void> allDone = CompletableFuture.allOf(
+        CompletableFuture.allOf(
             futures.toArray(new CompletableFuture[0])
-        );
+        ).join();
 
-        allDone.join();
         return futures.stream()
             .map(CompletableFuture::join)
             .collect(Collectors.toList());
