@@ -9,10 +9,10 @@ public class SingleOrderFetcher {
             System.err.println("Task " + orderId + " was interrupted");
         }
         String data = "data-from-task-" + orderId;
-        return buildResult(orderId, data);
+        return buildResult(orderId);
     }
 
-    private static Order buildResult(String orderId, String data) {
+    private static Order buildResult(String orderId) {
         return new Order(orderId);
     }
 }
