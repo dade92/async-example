@@ -1,6 +1,5 @@
 package taskrunner;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -15,15 +14,12 @@ public class MultiTaskRunner<E> {
     }
 
     public List<E> runTasks(List<Supplier<E>> tasks) {
-        List<CompletableFuture<E>> futures = new ArrayList<>();
+        List<CompletableFuture<E>> futures =
+            tasks.stream()
+                .map(task -> CompletableFuture.supplyAsync(task, executor))
+                .toList();
 
-        for (Supplier<E> task : tasks) {
-            futures.add(CompletableFuture.supplyAsync(task, executor));
-        }
-
-        CompletableFuture.allOf(
-            futures.toArray(new CompletableFuture[0])
-        ).join();
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
         return futures
             .stream()
