@@ -23,13 +23,7 @@ public class OrdersFetcher {
                 .map(orderId -> (Supplier<Order>) () -> singleOrderFetcher.fetch(orderId))
                 .toList();
 
-        long startTime = System.nanoTime();
-        List<Order> orders = multiTaskRunner.runTasks(tasks);
-        long endTime = System.nanoTime();
-        long durationMs = (endTime - startTime) / 1_000_000;
-
-        System.out.println("Computation took " + durationMs + " ms");
-        return orders;
+        return multiTaskRunner.runTasks(tasks);
     }
 
 }

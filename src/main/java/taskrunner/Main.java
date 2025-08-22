@@ -17,11 +17,27 @@ public class Main {
             singleOrderFetcher
         );
 
+        List<String> orderIds = of("123", "456", "789");
         try {
-            List<Order> orders = ordersFetcher.fetchAll(of("123", "456", "789"));
+            System.out.println("Fetching orders concurrently:");
+            long startTime = System.nanoTime();
+            List<Order> orders = ordersFetcher.fetchAll(orderIds);
+            long endTime = System.nanoTime();
+            long durationMs = (endTime - startTime) / 1_000_000;
+            System.out.println("Computation took " + durationMs + " ms");
             orders.forEach(System.out::println);
         } finally {
             executor.shutdown();
         }
+
+        System.out.println("Fetching orders sequentially:");
+        long startTime = System.nanoTime();
+        for (String orderId : orderIds) {
+            Order order = singleOrderFetcher.fetch(orderId);
+            System.out.println(order);
+        }
+        long endTime = System.nanoTime();
+        long durationMs = (endTime - startTime) / 1_000_000;
+        System.out.println("Computation took " + durationMs + " ms");
     }
 }
