@@ -5,11 +5,11 @@ import java.util.function.Supplier;
 
 public class OrdersFetcher {
 
-    private final MultiTaskRunner multiTaskRunner;
+    private final MultiTaskRunner<String> multiTaskRunner;
     private final SingleOrderFetcher singleOrderFetcher;
 
     public OrdersFetcher(
-        MultiTaskRunner multiTaskRunner,
+        MultiTaskRunner<String> multiTaskRunner,
         SingleOrderFetcher singleOrderFetcher
     ) {
         this.multiTaskRunner = multiTaskRunner;

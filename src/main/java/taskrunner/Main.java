@@ -9,7 +9,7 @@ public class Main {
     public static void main(String[] args) {
         ExecutorService executor = Executors.newFixedThreadPool(3);
         SingleOrderFetcher singleOrderFetcher = new SingleOrderFetcher();
-        MultiTaskRunner multiTaskRunner = new MultiTaskRunner(executor);
+        MultiTaskRunner<String> multiTaskRunner = new MultiTaskRunner<>(executor);
 
         OrdersFetcher ordersFetcher = new OrdersFetcher(
             multiTaskRunner,
