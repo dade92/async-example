@@ -1,6 +1,7 @@
 package taskrunner;
 
 import order.Order;
+import order.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,13 +22,13 @@ class OrdersFetcherTest {
     private MultiTaskRunner<Order> multiTaskRunner;
 
     @Mock
-    private SingleOrderFetcher singleOrderFetcher;
+    private OrderRepository orderRepository;
 
     private OrdersFetcher ordersFetcher;
 
     @BeforeEach
     void setUp() {
-        ordersFetcher = new OrdersFetcher(multiTaskRunner, singleOrderFetcher);
+        ordersFetcher = new OrdersFetcher(multiTaskRunner, orderRepository);
     }
 
     @Test

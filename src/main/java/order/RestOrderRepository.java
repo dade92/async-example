@@ -18,4 +18,19 @@ public class RestOrderRepository implements OrderRepository {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public Order retrieveSingleOrder(String orderId) {
+        try {
+            Thread.sleep(1000L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.err.println("Task " + orderId + " was interrupted");
+        }
+        return buildResult(orderId);
+    }
+
+    private static Order buildResult(String orderId) {
+        return new Order(orderId, BigDecimal.TEN);
+    }
 }

@@ -1,6 +1,8 @@
 package taskrunner;
 
 import order.Order;
+import order.OrderRepository;
+import order.RestOrderRepository;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -11,7 +13,7 @@ import static java.util.List.of;
 public class Main {
     public static void main(String[] args) {
         ExecutorService executor = Executors.newFixedThreadPool(3);
-        SingleOrderFetcher singleOrderFetcher = new SingleOrderFetcher();
+        OrderRepository singleOrderFetcher = new RestOrderRepository();
         MultiTaskRunner<Order> multiTaskRunner = new MultiTaskRunner<>(executor);
 
         OrdersFetcher ordersFetcher = new OrdersFetcher(
@@ -35,7 +37,7 @@ public class Main {
         System.out.println("Fetching orders sequentially:");
         long startTime = System.nanoTime();
         for (String orderId : orderIds) {
-            Order order = singleOrderFetcher.fetch(orderId);
+            Order order = singleOrderFetcher.retrieveSingleOrder(orderId);
             System.out.println(order);
         }
         long endTime = System.nanoTime();

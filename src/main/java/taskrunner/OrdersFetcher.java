@@ -1,6 +1,7 @@
 package taskrunner;
 
 import order.Order;
+import order.OrderRepository;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -8,11 +9,11 @@ import java.util.function.Supplier;
 public class OrdersFetcher {
 
     private final MultiTaskRunner<Order> multiTaskRunner;
-    private final SingleOrderFetcher singleOrderFetcher;
+    private final OrderRepository singleOrderFetcher;
 
     public OrdersFetcher(
         MultiTaskRunner<Order> multiTaskRunner,
-        SingleOrderFetcher singleOrderFetcher
+        OrderRepository singleOrderFetcher
     ) {
         this.multiTaskRunner = multiTaskRunner;
         this.singleOrderFetcher = singleOrderFetcher;
@@ -29,7 +30,7 @@ public class OrdersFetcher {
     }
 
     private Supplier<Order> getOrderSupplier(String orderId) {
-        return () -> singleOrderFetcher.fetch(orderId);
+        return () -> singleOrderFetcher.retrieveSingleOrder(orderId);
     }
 
 }
