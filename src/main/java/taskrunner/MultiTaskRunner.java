@@ -4,21 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class MultiTaskRunner {
     private final ExecutorService executor;
+    private final List<Supplier<String>> tasks;
 
-    public MultiTaskRunner(ExecutorService executor) {
+    public MultiTaskRunner(ExecutorService executor, List<Supplier<String>> tasks) {
         this.executor = executor;
+        this.tasks = tasks;
     }
 
     public List<String> runTasks() {
         List<CompletableFuture<String>> futures = new ArrayList<>();
 
-        for (int i = 1; i <= 3; i++) {
-            int taskId = i;
-            futures.add(CompletableFuture.supplyAsync(() -> runTask(taskId), executor));
+        for (Supplier<String> task : tasks) {
+            futures.add(CompletableFuture.supplyAsync(task, executor));
         }
 
         CompletableFuture.allOf(
