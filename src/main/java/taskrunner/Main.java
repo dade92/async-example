@@ -1,8 +1,9 @@
 package taskrunner;
 
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static java.util.List.of;
 
 public class Main {
     public static void main(String[] args) {
@@ -16,7 +17,7 @@ public class Main {
         );
 
         try {
-            ordersFetcher.fetchAll(List.of("123", "456", "789"));
+            ordersFetcher.fetchAll(of("123", "456", "789"));
         } finally {
             executor.shutdown();
         }

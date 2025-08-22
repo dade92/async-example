@@ -25,7 +25,8 @@ public class MultiTaskRunner {
             futures.toArray(new CompletableFuture[0])
         ).join();
 
-        return futures.stream()
+        return futures
+            .stream()
             .map(CompletableFuture::join)
             .collect(Collectors.toList());
     }

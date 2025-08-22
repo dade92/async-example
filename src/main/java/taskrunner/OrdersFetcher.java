@@ -16,21 +16,23 @@ public class OrdersFetcher {
         this.singleOrderFetcher = singleOrderFetcher;
     }
 
-    public void fetchAll(List<String> orderIds) {
+    public List<String> fetchAll(List<String> orderIds) {
         List<Supplier<String>> tasks =
-            orderIds.stream()
+            orderIds
+                .stream()
                 .map(orderId -> (Supplier<String>) () -> singleOrderFetcher.fetch(orderId))
                 .toList();
 
         long startTime = System.nanoTime();
-        List<String> results = multiTaskRunner.runTasks(tasks);
+        List<String> orders = multiTaskRunner.runTasks(tasks);
 
-        results.forEach(System.out::println);
+        orders.forEach(System.out::println);
 
         long endTime = System.nanoTime();
         long durationMs = (endTime - startTime) / 1_000_000;
 
         System.out.println("Computation took " + durationMs + " ms");
+        return orders;
     }
 
 }
