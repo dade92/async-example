@@ -11,21 +11,22 @@ import java.util.concurrent.Executors;
 import static java.util.List.of;
 
 public class Main {
+    private static final List<String> ORDER_IDS = of("123", "456", "789");
+
     public static void main(String[] args) {
         ExecutorService executor = Executors.newFixedThreadPool(3);
-        OrderRepository singleOrderFetcher = new RestOrderRepository();
+        OrderRepository orderRepository = new RestOrderRepository();
         MultiTaskRunner<Order> multiTaskRunner = new MultiTaskRunner<>(executor);
 
         OrdersFetcher ordersFetcher = new OrdersFetcher(
             multiTaskRunner,
-            singleOrderFetcher
+            orderRepository
         );
 
-        List<String> orderIds = of("123", "456", "789");
         try {
             System.out.println("Fetching orders concurrently:");
             long startTime = System.nanoTime();
-            List<Order> orders = ordersFetcher.fetchAll(orderIds);
+            List<Order> orders = ordersFetcher.fetchAll(ORDER_IDS);
             long endTime = System.nanoTime();
             long durationMs = (endTime - startTime) / 1_000_000;
             System.out.println("Computation took " + durationMs + " ms");
@@ -36,8 +37,8 @@ public class Main {
 
         System.out.println("Fetching orders sequentially:");
         long startTime = System.nanoTime();
-        for (String orderId : orderIds) {
-            Order order = singleOrderFetcher.retrieveSingleOrder(orderId);
+        for (String orderId : ORDER_IDS) {
+            Order order = orderRepository.retrieveSingleOrder(orderId);
             System.out.println(order);
         }
         long endTime = System.nanoTime();
