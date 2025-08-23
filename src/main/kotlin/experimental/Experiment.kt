@@ -39,6 +39,12 @@ class Experiment(
 
     fun run(token: String): CompletableFuture<Details> {
         Logger.log("Experiment started!")
+        /*
+        * public <U,V> CompletableFuture<V> thenCombine(CompletionStage<? extends U> other,BiFunction<? super T,? super U,? extends V> fn)
+        * CF1 -> ORDER (type T)
+        * CF2 -> USER (type U)
+        * CF3 -> DETAILS (type V)
+        * */
         return getOrder(token)
             .thenCombine(
                 getUser(token)

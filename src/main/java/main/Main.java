@@ -11,6 +11,8 @@ import java.util.concurrent.Executors;
 
 public class Main {
 
+    public static final String TOKEN = "my-token";
+
     public static void main(String[] args) {
         Logger.log("Main starts");
 
@@ -41,11 +43,12 @@ public class Main {
     }
 
     private static void executeAsyncKotlin(ExecutorService executor) {
-        new Experiment(
+        Experiment experiment = new Experiment(
             new RestOrderRepository(),
             new RestUserRepository(),
             executor
-        ).run("my-token")
+        );
+        experiment.run(TOKEN)
             .thenAccept(
                 details -> Logger.log("Final details: " + details)
             )
