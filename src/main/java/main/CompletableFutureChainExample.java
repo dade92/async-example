@@ -6,16 +6,31 @@ import java.util.concurrent.Executors;
 
 public class CompletableFutureChainExample {
 
+    public static void main(String[] args) {
+        new CompletableFutureChainExample().performAsyncChainedCalls();
+    }
+
     private final CollaboratorA collaboratorA = new CollaboratorA();
     private final CollaboratorB collaboratorB = new CollaboratorB();
 
     public void performAsyncChainedCalls() {
         ExecutorService executor = Executors.newFixedThreadPool(2);
 
-        executeAsync("42", executor)
-            .thenAccept((result) -> System.out.println(result.result()));
+//        executeAsync("42", executor)
+//            .thenAccept((result) -> System.out.println(result.result()));
+
+        Result join = composeAsync("44", executor).join();
+
+        System.out.println("Result from composeAsync: " + join.result());
 
         executor.shutdown();
+    }
+
+    private CompletableFuture<Result> composeAsync(String id, ExecutorService executor) {
+        return CompletableFuture.supplyAsync(() -> collaboratorA.fetchData(id), executor)
+            .thenCompose(resultA ->
+                CompletableFuture.supplyAsync(() -> collaboratorB.fetchData(id), executor)
+            );
     }
 
     private CompletableFuture<Result> executeAsync(String id, ExecutorService executor) {

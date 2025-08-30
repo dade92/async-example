@@ -3,6 +3,7 @@ package experimental
 import order.Details
 import order.Order
 import order.OrderRepository
+import order.Product
 import user.User
 import user.UserRepository
 import utils.Logger
@@ -33,6 +34,18 @@ class Experiment(
                 val user = userRepository.findByToken(token)
                 Logger.log("Getting user finished")
                 user
+            },
+            executor
+        )
+
+    private fun getRelatedProducts(orders: List<Order>): CompletableFuture<List<Product>> =
+        CompletableFuture.supplyAsync(
+            {
+                Logger.log("Getting related products for orders $orders")
+                Thread.sleep(1500)
+                val relatedProducts = listOf(Product("123"), Product("456"))
+                Logger.log("Getting related products for order $orders finished")
+                relatedProducts
             },
             executor
         )
