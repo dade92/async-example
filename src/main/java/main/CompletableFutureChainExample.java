@@ -19,57 +19,66 @@ public class CompletableFutureChainExample {
 //        executeAsync("42", executor)
 //            .thenAccept((result) -> System.out.println(result.result()));
 
-        Result join = composeAsync("44", executor).join();
+        ResultB resultB = composeAsync("44", executor).join();
 
-        System.out.println("Result from composeAsync: " + join.result());
+        System.out.println("Result from composeAsync: " + resultB.result());
 
         executor.shutdown();
     }
 
-    private CompletableFuture<Result> composeAsync(String id, ExecutorService executor) {
-        return CompletableFuture.supplyAsync(() -> collaboratorA.fetchData(id), executor)
-            .thenCompose(resultA ->
-                CompletableFuture.supplyAsync(() -> collaboratorB.fetchData(id), executor)
-            );
+    private CompletableFuture<ResultB> composeAsync(String id, ExecutorService executor) {
+        return CompletableFuture.supplyAsync(
+            () -> collaboratorA.fetchData(id),
+            executor
+        ).thenCompose(resultA ->
+            CompletableFuture.supplyAsync(
+                () -> collaboratorB.fetchData(id),
+                executor
+            )
+        );
     }
 
-    private CompletableFuture<Result> executeAsync(String id, ExecutorService executor) {
-
+    private CompletableFuture<ResultA> executeAsync(String id, ExecutorService executor) {
         return CompletableFuture
             .supplyAsync(() -> collaboratorA.fetchData(id), executor)
             .thenCombine(
                 CompletableFuture.supplyAsync(
                     () -> collaboratorB.fetchData(id), executor
                 ),
-                (resultA, resultB) -> new Result("Combined: [" + resultA + "] + [" + resultB + "]")
+                (resultA, resultB) -> new ResultA("Combined: [" + resultA + "] + [" + resultB + "]")
             );
     }
 
     static class CollaboratorA {
-        public Result fetchData(String id) {
+        public ResultA fetchData(String id) {
             try {
                 System.out.println("Calling collaborator A with id " + id);
                 Thread.sleep(1000);
             } catch (InterruptedException ignored) {
             }
-            return new Result("Data from A");
+            return new ResultA("Data from A");
         }
     }
 
     static class CollaboratorB {
-        public Result fetchData(String id) {
+        public ResultB fetchData(String id) {
             try {
                 System.out.println("Calling collaborator B with id " + id);
                 Thread.sleep(1500);
             } catch (InterruptedException ignored) {
             }
-            return new Result("Data from B");
+            return new ResultB("Data from B");
         }
     }
 
 }
 
-record Result(
+record ResultA(
+    String result
+) {
+}
+
+record ResultB(
     String result
 ) {
 }
